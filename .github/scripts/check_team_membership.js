@@ -33,6 +33,10 @@ async function checkTeamMembership({ github, context, core, teamSlug, issueNumbe
       team_slug: teamSlug,
     });
   } catch (error) {
+    if (error.status === 404) {
+      core.info(`Team ${teamSlug} not found in ${context.repo.owner} (may be a personal account or fork). Treating author as non-member.`);
+      return { author, isTeamMember: false };
+    }
     core.setFailed(`Team lookup failed for ${teamSlug}: ${error.message}`);
     throw error;
   }
